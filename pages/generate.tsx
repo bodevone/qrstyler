@@ -48,9 +48,13 @@ const Home: NextPage = () => {
     let endpointUrl = await res.json();
     if (res.status !== 200) {
       setError(endpointUrl);
+      setLoading(false);
+      return;
     }
 
-    while(!generatedImage) {
+    let newImage: string | null = null;
+
+    while(!newImage) {
       const res = await fetch("/api/getPrediction", {
         method: "POST",
         headers: {
@@ -59,22 +63,20 @@ const Home: NextPage = () => {
         body: JSON.stringify({ endpointUrl: endpointUrl }),
       });
 
-      let newPhoto = await res.json();
-
+      let responseImage = await res.json();
       if (res.status === 200) {
-        if (newPhoto) {
-          setGeneratedImage(newPhoto);
+        if (responseImage) {
+          newImage = responseImage;
+          setGeneratedImage(responseImage);
         } else {
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       } else {
-        setError(newPhoto);
+        setError(responseImage);
         break;
       }
     }
-
     setLoading(false);
-
   }
 
   return (
