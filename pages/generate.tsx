@@ -45,14 +45,36 @@ const Home: NextPage = () => {
       body: JSON.stringify({ prompt: prompt, qrCodeContent: text}),
     });
 
-    let newPhoto = await res.json();
-
+    let endpointUrl = await res.json();
     if (res.status !== 200) {
-      setError(newPhoto);
-    } else {
-      setGeneratedImage(newPhoto);
+      setError(endpointUrl);
     }
+
+    while(!generatedImage) {
+      const res = await fetch("/api/getPrediction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ endpointUrl: endpointUrl }),
+      });
+
+      let newPhoto = await res.json();
+
+      if (res.status === 200) {
+        if (newPhoto) {
+          setGeneratedImage(newPhoto);
+        } else {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      } else {
+        setError(newPhoto);
+        break;
+      }
+    }
+
     setLoading(false);
+
   }
 
   return (
