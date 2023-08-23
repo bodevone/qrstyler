@@ -94,8 +94,7 @@ const Home: NextPage = () => {
         {status === "unauthenticated" && (
           <div className="h-[250px] flex flex-col items-center space-y-6 max-w-[670px] mt-8">
             <div className="max-w-xl text-gray-600">
-              Sign in below with Google to create a free account and restore
-              your photos today
+              Sign in below with Google to create a free account
             </div>
             <button
               onClick={() => signIn("google")}
